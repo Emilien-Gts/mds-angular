@@ -1,0 +1,23 @@
+<app-game-list-filter (filter)="onFilter($event)"></app-game-list-filter>
+
+<div class="cards">
+  <div>
+    <button (click)="sizeDown()">-</button>
+    <button (click)="sizeUp()">+</button>
+    <button (click)="sizeReset()">Re-Init</button>
+  </div>
+  <ul class="cards__list">
+    <li class="card" *ngFor="let game of filteredEntities" [ngStyle]="{'width': width + 'px'}">
+      <img card__image src="{{ game.image }}" alt="Avatar" [ngStyle]="{'width': width + 'px'}">
+      <div class="card__container" >
+        <h4>{{ game.name }}</h4> 
+        <p><strong>Type et éditeur : </strong>{{ game.category }} - {{ game.editor }}</p> 
+        <p><strong>Note:</strong> {{ game.note }}</p> 
+        <p style="width: 300px;"><strong>Description:</strong> {{ truncate(game.description) }}</p>
+          <app-game-actions 
+            (click)="onActionClick($event, game)">
+          </app-game-actions>
+      </div>
+    </li>
+  </ul>
+</div>
