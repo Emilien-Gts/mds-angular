@@ -136,5 +136,8 @@
       }
     }
   },
-  "defaultProject": "games-catalogues"
+  "defaultProject": "games-catalogues",
+  "cli": {
+    "analytics": "61806d0e-89ed-4a7d-a61e-b0e26cf1d61d"
+  }
 }
