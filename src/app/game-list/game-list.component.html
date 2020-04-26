@@ -1,4 +1,4 @@
-<app-game-list-filter (filter)="onFilter($event)"></app-game-list-filter>
+<app-game-list-filter (filtered)="filtering($event)"></app-game-list-filter>
 
 <div class="cards">
   <div>
@@ -7,12 +7,14 @@
     <button (click)="sizeReset()">Re-Init</button>
   </div>
   <ul class="cards__list">
-    <li class="card" *ngFor="let game of filteredEntities" [ngStyle]="{'width': width + 'px'}">
-      <img card__image src="{{ game.image }}" alt="Avatar" [ngStyle]="{'width': width + 'px'}">
+    <li class="card" *ngFor="let game of filteredGames" [ngStyle]="{'width': width + 'px'}">
+      <img card__image src="{{ game.coverImage }}" alt="Avatar" [ngStyle]="{'width': width + 'px'}">
       <div class="card__container" >
-        <h4>{{ game.name }}</h4> 
-        <p><strong>Type et éditeur : </strong>{{ game.category }} - {{ game.editor }}</p> 
-        <p><strong>Note:</strong> {{ game.note }}</p> 
+        <h4>{{ game.title }}</h4> 
+        <p><strong>Type et éditeur : </strong><span *ngFor="let genre of game.genres; let last = last">{{!last ? genre.name + ', ' : genre.name}}</span></p> 
+        <p><strong><span>Publisher : </span> {{game.publisher.name}}</strong></p>
+        <p><strong><span>Developer : </span> {{game.developer.name}}</strong></p>
+        <p><strong>Note:</strong>{{game.note}} /10</p> 
         <p style="width: 300px;"><strong>Description:</strong> {{ truncate(game.description) }}</p>
           <app-game-actions 
             (click)="onActionClick($event, game)">

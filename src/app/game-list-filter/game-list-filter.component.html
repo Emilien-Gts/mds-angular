@@ -1,12 +1,13 @@
 <!-- {{ form | json }} -->
 
-<form class="form-game" (submit)="onSubmit($event)">
-  <input (change)="onChange('name', $event.target.value)" type="text" name="nom-jeu" placeholder="Nom">
-  <select (change)="onChange('category', $event.target.value)" name="type-jeu">
-    <option value="">Catégorie du jeu</option>
-    <option *ngFor="let c of gameCategories">{{ c }}</option>
-  </select>
-  <input (change)="onChange('editor', $event.target.value)" name="editor" type="text" placeholder="Editeur">
-  <input type="reset" value="RAZ" (click)="onReset()">
-  <input type="submit" value="Filter">
+<form class="form-game" action="" (submit)="filter()">
+  <input (change)="setValue($event.target)" [value]="form.name" type="text" id="name" name="name" placeholder="Nom">
+  <select name="type" id="type" class="slide-up" [value]="form.type"
+              (change)="setValue($event.target)">
+        <option disabled>Choisis un type</option>
+        <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+      </select>
+  <input (change)="setValue($event.target)" [value]="form.editor" name="editor" type="text" placeholder="Editeur">
+  <input type="reset" value="RAZ" (click)="razFilter()">
+  <input type="submit" value="Filter" (click)="filter()">
 </form>

@@ -1,10 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {GameApiService} from '../game-list/services/game-api.service';
+import {Categories} from '../interfaces/categories';
 
-export interface GameFilter {
-  name: string;
-  category: string;
-  editor: string;
-}
+type TargetType = any | { name: string, value: string };
 
 @Component({
   selector: 'app-game-list-filter',
@@ -12,34 +10,49 @@ export interface GameFilter {
   styleUrls: ['./game-list-filter.component.scss']
 })
 export class GameListFilterComponent implements OnInit {
+  @Output() filtered = new EventEmitter();
 
-  gameCategories = [
-    'Role', 'RPG'
-  ];
+  games: any;
+  categories: Categories[];
 
-  form: GameFilter = { name: '', category: '', editor: '' };
+  constructor(private gameApi: GameApiService) {
+    // Nothing to do here..
+  }
 
-  @Output()
-  filter = new EventEmitter<GameFilter>();
+  form = {
+    name: '',
+    type: '',
+    editor: '',
+  };
 
-  constructor() { }
+  setValue(target: TargetType) {
+    event.preventDefault();
+    this.form[target.name] = target.value;
+    console.log(this.form);
+  }
+
+  filter() {
+    event.preventDefault();
+    console.log(this.form);
+    this.filtered.emit(this.form);
+  }
+
+  razFilter() {
+    const that = this.form;
+    Object.keys(this.form).map((key, index) => {
+      that[key] = '';
+    });
+    this.filtered.emit(this.form);
+  }
+
+  getCategoriesList() {
+    this.gameApi.getAllCategories()
+      .subscribe((data: Categories[]) => {
+        this.categories = data;
+      });
+  }
 
   ngOnInit() {
+    this.getCategoriesList();
   }
-
-  onChange(key: string, value: string) {
-    if (key !== 'category') { value = value.trim().toLowerCase(); }
-    this.form[key] = value;
-  }
-
-  onSubmit(event: any) {
-    event.preventDefault();
-    this.filter.emit(this.form);
-  }
-
-  onReset() {
-    this.form = { name: '', category: '', editor: '' };
-    this.filter.emit(this.form);
-  }
-
 }

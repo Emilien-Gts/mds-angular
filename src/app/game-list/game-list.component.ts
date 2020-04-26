@@ -1,51 +1,37 @@
-import { GameFilter } from './../game-list-filter/game-list-filter.component';
 import { Component, OnInit } from '@angular/core';
-import { Game } from './game';
-import { GameActions } from './game-actions';
+import {GameApiService} from './services/game-api.service';
+import {Games} from '../interfaces/games';
 
 @Component({
   selector: 'app-game-list',
   templateUrl: './game-list.component.html',
   styleUrls: ['./game-list.component.scss']
 })
+
 export class GameListComponent implements OnInit {
+  games: Games[];
+
+  filteredGames: any[];
 
   defaultSize = 400;
-  width = this.defaultSize;
+  width = 400;
 
-  entities: Game[] = [
-    {
-      id: 1,
-      name: 'Monster Hunter',
-      description: 'Monster Hunter est une série de jeux vidéo développée et éditée par Capcom. La série commence avec le jeu Monster Hunter sur PlayStation 2 où, comme le titre de la série le suggère, le joueur incarne un chasseur, dans un environnement fantasy, qui complète des quêtes ayant pour but, principalement, de chasser ou capturer des monstres et aussi de collecter des minéraux, poissons, petits monstres.',
-      editor: 'Capcom',
-      image: 'https://i.pinimg.com/originals/28/0f/d3/280fd3bf4859179d926ec500b4d6e940.jpg',
-      note: 9.9,
-      category: 'Role'
-    }, 
-    {
-      id: 2,
-      name: 'Dragon quest XI',
-      description: 'Dragon Quest XI : Les Combattants de la destinée est un jeu vidéo de rôle développé par Square Enix et Armor Project et distribué par Square Enix. Il s\'agit du onzième épisode principal de la série Dragon Quest.',
-      editor: 'Square Enix',
-      image: 'https://www.gamewallpapers.com/wallpapers_slechte_compressie/wallpaper_dragon_quest_xi_echoes_of_an_elusive_age_01_1920x1080.jpg',
-      note: 9.5,
-      category: 'RPG'
-    }
-  ];
-
-  filteredEntities = this.entities;
-
-  constructor() { }
+  constructor(private gameApi: GameApiService) {
+    // Nothing to do here..
+  }
 
   ngOnInit() {
-
+    this.getGamesList();
   }
 
   truncate(value: string) {
     const words = value.split(' ', 20);
 
     return words.join(' ') + (words.length > 20 ? + '' : '...');
+  }
+
+  buttonAlert(event) {
+    alert('You clicked on ' + event.type + ' for the game ' + event.game);
   }
 
   sizeUp() {
@@ -60,14 +46,20 @@ export class GameListComponent implements OnInit {
     this.width = this.defaultSize;
   }
 
-  onActionClick(action: GameActions, game: Game) {
-    alert(`${['follow', 'share', 'buy'][action]} the game nammed ${game.name}`);
+  filtering(form) {
+    this.filteredGames = this.games
+      .filter(game =>
+        (!form.name || game.title.includes(form.name))
+        && (!form.type || (!!game.genres.find(genre => genre.id === Number(form.type))))
+        && (!form.editor || game.publisher.name.includes(form.editor))
+      );
   }
 
-  onFilter(filterForm: GameFilter) {
-    this.filteredEntities = this.entities
-        .filter(e => (!filterForm.name || e.name.toLocaleLowerCase().includes(filterForm.name))
-            && (!filterForm.category || e.category === filterForm.category)
-            && (!filterForm.editor || e.editor.toLowerCase().includes(filterForm.editor)));
+  getGamesList() {
+    this.gameApi.getAllGames()
+      .subscribe((data: Games[]) => {
+        this.games = data;
+        this.filtering({});
+      });
   }
 }
